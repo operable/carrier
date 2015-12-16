@@ -20,6 +20,9 @@ defmodule Carrier.Credentials do
   end
 
   @doc "Validates the directory structure and file permissions of credentials."
+  def validate_files!(nil) do
+    raise FileError.new("Credential root directory is nil")
+  end
   def validate_files!(root) do
     if File.exists?(root) do
       if File.dir?(root) do
