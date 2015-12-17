@@ -31,7 +31,7 @@ defmodule Carrier.CredentialManager do
   def store!(%Credentials{}=creds) do
     credentials_path = Application.get_env(:carrier, :credentials_dir)
     Credentials.write_public_credentials!(credentials_path, creds)
-    :ets.insert(@table, {creds.id, creds})
+    GenServer.call(__MODULE__, {:store, creds})
   end
 
   def init(_) do
@@ -45,6 +45,14 @@ defmodule Carrier.CredentialManager do
         Logger.error("#{e.message}")
         :init.stop()
     end
+  end
+
+  def handle_call({:store, creds}, _from, state) do
+    true = :ets.insert(@table, {creds.id, creds})
+    {:reply, :ok, state}
+  end
+  def handle_call(_message, _from, state) do
+    {:reply, :ignored, state}
   end
 
   defp init_credential_store(creds) do
