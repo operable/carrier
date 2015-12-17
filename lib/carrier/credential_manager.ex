@@ -18,10 +18,17 @@ defmodule Carrier.CredentialManager do
     end
   end
 
+  def store!(%Credentials{}=creds) do
+    credentials_path = Application.get_env(:carrier, :credentials_dir)
+    Credentials.write_public_credentials!(credentials_path, creds)
+    :ets.insert(storage(), {creds.id, creds})
+  end
+
   def init(_) do
     try do
       credentials = Credentials.validate_files!
-      store_credentials(credentials)
+      init_credential_store(credentials)
+      load_all_credentials()
       ready({:ok, nil})
     rescue
       e in [Carrier.SecurityError] ->
@@ -30,9 +37,20 @@ defmodule Carrier.CredentialManager do
     end
   end
 
-  defp store_credentials(creds) do
+  defp init_credential_store(creds) do
     :ets.new(storage(), [:set, :protected, :named_table, {:read_concurrency, true}])
-    :ets.insert_new(storage(), {:system, creds})
+    :ets.insert_new(storage(), {:system, creds.id})
+    :ets.insert_new(storage(), {creds.id, creds})
+  end
+
+  defp load_all_credentials() do
+    credentials_path = Application.get_env(:carrier, :credentials_dir)
+    for {name, credential} <- Credentials.read_all_credentials!(credentials_path) do
+      if name != "carrier" do
+        :ets.insert_new(storage(), {name, credential})
+        Logger.info("Loaded credentials for #{name}")
+      end
+    end
   end
 
   defp storage() do

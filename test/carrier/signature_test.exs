@@ -5,8 +5,8 @@ defmodule Carrier.SignatureTest do
   use Carrier.Test.Hygiene
 
   setup_all do
-    {:ok, %{creds: Carrier.Credentials.generate_credentials(),
-            other_creds: Carrier.Credentials.generate_credentials()}}
+    {:ok, %{creds: Carrier.Credentials.generate(),
+            other_creds: Carrier.Credentials.generate()}}
   end
 
   defmacrop verify_signature_envelope(signed, original, creds) do

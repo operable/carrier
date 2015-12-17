@@ -66,4 +66,24 @@ defmodule Carrier.CredentialsTest do
     assert error.message == "Path #{pub_key_path} should have mode 100600 but has 100644 instead"
   end
 
+  test "saving public credentials" do
+    credentials_root = temp_dir!
+    File.mkdir_p!(credentials_root)
+    credentials = Credentials.generate()
+    Credentials.write_public_credentials!(credentials_root, credentials)
+    :ok
+  end
+
+  test "reading public credentials" do
+    credentials_root = temp_dir!
+    Credentials.validate_files!(credentials_root)
+    credentials = Credentials.generate()
+    Credentials.write_public_credentials!(credentials_root, credentials)
+    [{name, creds}] = Credentials.read_all_credentials!(credentials_root)
+    assert name == credentials.id
+    assert creds.public == credentials.public
+    assert creds.id == credentials.id
+    assert creds.private == nil
+  end
+
 end
