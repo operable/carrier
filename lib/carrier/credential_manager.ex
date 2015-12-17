@@ -5,12 +5,22 @@ defmodule Carrier.CredentialManager do
 
   alias Carrier.Credentials
 
+  @table :carrier_creds
+
   def start_link() do
-    GenServer.start_link(__MODULE__, name: __MODULE__)
+    GenServer.start_link(__MODULE__, [], name: __MODULE__)
   end
 
-  def get(name \\ :system) do
-    case :ets.lookup(storage(), name) do
+  def get() do
+    get(:system)
+  end
+
+  def get(:system) do
+    [{_, id}] = :ets.lookup(@table, :system)
+    get(id)
+  end
+  def get(id) do
+    case :ets.lookup(@table, id) do
       [{_, creds}] ->
         creds
       _ ->
@@ -21,7 +31,7 @@ defmodule Carrier.CredentialManager do
   def store!(%Credentials{}=creds) do
     credentials_path = Application.get_env(:carrier, :credentials_dir)
     Credentials.write_public_credentials!(credentials_path, creds)
-    :ets.insert(storage(), {creds.id, creds})
+    :ets.insert(@table, {creds.id, creds})
   end
 
   def init(_) do
@@ -38,23 +48,19 @@ defmodule Carrier.CredentialManager do
   end
 
   defp init_credential_store(creds) do
-    :ets.new(storage(), [:set, :protected, :named_table, {:read_concurrency, true}])
-    :ets.insert_new(storage(), {:system, creds.id})
-    :ets.insert_new(storage(), {creds.id, creds})
+    :ets.new(@table, [:set, :protected, :named_table, {:read_concurrency, true}])
+    :ets.insert_new(@table, {:system, creds.id})
+    :ets.insert_new(@table, {creds.id, creds})
   end
 
   defp load_all_credentials() do
     credentials_path = Application.get_env(:carrier, :credentials_dir)
     for {name, credential} <- Credentials.read_all_credentials!(credentials_path) do
       if name != "carrier" do
-        :ets.insert_new(storage(), {name, credential})
+        :ets.insert_new(@table, {name, credential})
         Logger.info("Loaded credentials for #{name}")
       end
     end
-  end
-
-  defp storage() do
-    :carrier_creds
   end
 
 end
