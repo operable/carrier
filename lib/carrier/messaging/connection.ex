@@ -16,6 +16,14 @@ defmodule Carrier.Messaging.Connection do
   @opaque connection :: pid()
 
   @doc """
+  Starts up a message bus client process using only preconfigured parameters.
+  """
+  @spec connect() :: {:ok, connection()} | :ignore | {:error, term()}
+  def connect() do
+    connect([])
+  end
+
+  @doc """
   Starts up a message bus client process.
 
   Additionally, logging on this connection will be done at the level
@@ -24,9 +32,9 @@ defmodule Carrier.Messaging.Connection do
 
   """
   # Again, this spec is what comes from emqttc
-  @spec connect() :: {:ok, connection()} | :ignore | {:error, term()}
-  def connect() do
-    opts = add_system_config([])
+  @spec connect(Keyword.t()) :: {:ok, connection()} | :ignore | {:error, term()}
+  def connect(opts) do
+    opts = add_system_config(opts)
     :emqttc.start_link(opts)
   end
 
