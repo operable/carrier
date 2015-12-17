@@ -28,10 +28,14 @@ defmodule Carrier.CredentialManager do
     end
   end
 
-  def store!(%Credentials{}=creds) do
-    credentials_path = Application.get_env(:carrier, :credentials_dir)
-    Credentials.write_public_credentials!(credentials_path, creds)
-    GenServer.call(__MODULE__, {:store, creds})
+  def store!(%Credentials{}=creds, is_bot \\ false) do
+    case GenServer.call(__MODULE__, {:store, creds, is_bot}) do
+      :ok ->
+        credentials_path = Application.get_env(:carrier, :credentials_dir)
+        Credentials.write_public_credentials!(credentials_path, creds)
+      error ->
+        error
+    end
   end
 
   def init(_) do
@@ -47,7 +51,17 @@ defmodule Carrier.CredentialManager do
     end
   end
 
-  def handle_call({:store, creds}, _from, state) do
+  def handle_call({:store, creds, true}, _from, state) do
+    case :ets.lookup(@table, :bot_id) do
+      [] ->
+        :ets.insert(@table, {:bot_id, creds.id})
+        :ets.insert(@table, {creds.id, creds})
+        {:reply, :ok, state}
+      _ ->
+        {:error, :bot_key_exists}
+    end
+  end
+  def handle_call({:store, creds, false}, _from, state) do
     true = :ets.insert(@table, {creds.id, creds})
     {:reply, :ok, state}
   end
