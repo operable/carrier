@@ -58,7 +58,7 @@ defmodule Carrier.CredentialManager do
         :ets.insert(@table, {creds.id, creds})
         {:reply, :ok, state}
       _ ->
-        {:error, :bot_key_exists}
+        {:reply, {:error, :bot_key_exists}, state}
     end
   end
   def handle_call({:store, creds, false}, _from, state) do
