@@ -43,6 +43,24 @@ defmodule Carrier.Signature do
     end
   end
 
+  @spec extract_authenticated_payload(String.t) :: {:ok, String.t} | {:error, term}
+  def extract_authenticated_payload(message) do
+    envelope = Poison.decode!(message)
+    id = envelope["id"]
+    contents = envelope["data"]
+    case Carrier.CredentialManager.get(id) do
+      %Credentials{public: pub_key} ->
+        case verify(envelope, pub_key) do
+          true ->
+            {:ok, Poison.encode!(contents)}
+          false ->
+            {:error, :not_verified}
+        end
+      nil ->
+        {:error, {:unrecognized_id, id}}
+    end
+  end
+
   @spec mangle!(Map.t()) :: binary() | no_return()
   defp mangle!(obj) do
     # Message signatures can be thought of as a kind of checksum.
