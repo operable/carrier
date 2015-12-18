@@ -64,7 +64,7 @@ defmodule Carrier.Messaging.Connection do
     * `:routed_by` - the topic on which to publish `message`. Required.
 
   """
-  def publish(conn, message, kw_args) when is_map(message) do
+  def publish(conn, message, kw_args) when is_binary(message) do
     signed = Signature.sign(message)
     topic = Keyword.fetch!(kw_args, :routed_by)
     :emqttc.publish(conn, topic, Poison.encode!(signed))

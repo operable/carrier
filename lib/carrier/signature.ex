@@ -4,6 +4,10 @@ defmodule Carrier.Signature do
   alias Carrier.CredentialManager
   alias Carrier.Util
 
+
+  def sign(str) when is_binary(str),
+    do: sign(Poison.decode!(str))
+
   @doc "Signs a JSON object using the system credentials"
   @spec sign(Map.t()) :: Map.t() | no_return()
   def sign(obj) do
@@ -28,7 +32,7 @@ defmodule Carrier.Signature do
 
   @doc "Verify JSON object signature"
   @spec verify(Map.t(), binary()) :: boolean() | no_return()
-  def verify(%{data: obj, signature: sig}, key) when is_map(obj) do
+  def verify(%{"data" => obj, "signature" => sig}, key) when is_map(obj) do
     sig = Util.hex_string_to_binary(sig)
     text = mangle!(obj)
     case :enacl.sign_verify_detached(sig, text, key) do
