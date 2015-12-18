@@ -12,9 +12,9 @@ defmodule Carrier.SignatureTest do
   defmacrop verify_signature_envelope(signed, original, creds) do
     quote bind_quoted: [signed: signed, original: original, creds: creds], location: :keep do
       assert signed != original
-      assert signed.data == original
-      assert is_binary(signed.signature)
-      assert signed.id == creds.id
+      assert signed["data"] == original
+      assert is_binary(signed["signature"])
+      assert signed["id"] == creds.id
     end
   end
 

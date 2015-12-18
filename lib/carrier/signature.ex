@@ -27,7 +27,7 @@ defmodule Carrier.Signature do
     text = mangle!(obj)
     sig = :enacl.sign_detached(text, key)
     sig = Util.binary_to_hex_string(sig)
-    %{data: obj, signature: sig, id: id}
+    %{"data" => obj, "signature" => sig, "id" => id}
   end
 
   @doc "Verify JSON object signature"

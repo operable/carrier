@@ -72,9 +72,8 @@ defmodule Carrier.Messaging.Connection do
     topic = Keyword.fetch!(kw_args, :routed_by)
     :emqttc.publish(conn, topic, Poison.encode!(signed))
   end
-  def publish(conn, message, kw_args) when is_map(message)
-    do: publish(conn, Poison.encode!(message), kw_args
-
+  def publish(conn, message, kw_args) when is_map(message),
+    do: publish(conn, Poison.encode!(message), kw_args)
 
   defp add_system_config(opts) do
     opts
