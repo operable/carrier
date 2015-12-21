@@ -11,7 +11,7 @@ defimpl Carrier.Signature, for: Carrier.Credentials do
 
   @doc "Verify JSON object signature"
   @spec verify(Map.t(), binary()) :: boolean() | no_return()
-  def verify(%Credentials{}=creds, %{data: obj, signature: sig}) when is_map(obj) do
+  def verify(%Credentials{}=creds, %{"data" => obj, "signature" => sig}) when is_map(obj) do
     sig = Util.hex_string_to_binary(sig)
     text = mangle!(obj)
     case :enacl.sign_verify_detached(sig, text, creds.public) do
@@ -39,8 +39,7 @@ defimpl Carrier.Signature, for: Carrier.Credentials do
     text = mangle!(obj)
     sig = :enacl.sign_detached(text, key)
     sig = Util.binary_to_hex_string(sig)
-    %{data: obj, signature: sig, id: id}
+    %{"data" => obj, "signature" => sig, "id" => id}
   end
-
 
 end
