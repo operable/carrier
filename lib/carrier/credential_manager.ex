@@ -5,6 +5,7 @@ defmodule Carrier.CredentialManager do
   use GenServer
   use Adz
 
+  alias Carrier.Signature
   alias Carrier.Credentials
 
   def start_link() do
@@ -21,6 +22,19 @@ defmodule Carrier.CredentialManager do
 
   def store(%Credentials{}=creds) do
     GenServer.call(__MODULE__, {:store, creds}, :infinity)
+  end
+
+  def verify_signed_message(%{"id" => id, "data" => obj}=message) do
+    case get(id, by: :id) do
+      {:ok, nil} ->
+        false
+      {:ok, creds} ->
+        if Signature.verify(creds, message) do
+          {true, obj}
+        else
+          false
+        end
+    end
   end
 
   def init(_) do
