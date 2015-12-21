@@ -66,8 +66,8 @@ defmodule Carrier.CredentialManager do
   def handle_call({:get, value, opts}, _from, %__MODULE__{store: db}=state) do
     {:reply, CredentialStore.lookup(db, value, opts), state}
   end
-  def handle_call({:store, creds}, _from, %__MODULE__{store: db}) do
-    {:reply, CredentialStore.store(db, creds)}
+  def handle_call({:store, creds}, _from, %__MODULE__{store: db}=state) do
+    {:reply, CredentialStore.store(db, creds), state}
   end
   def handle_call(_ignored, _from, state) do
     {:reply, :ignored, state}
