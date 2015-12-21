@@ -1,88 +1,54 @@
 defmodule Carrier.CredentialManager do
 
+  defstruct [:store]
+
   use GenServer
   use Adz
 
   alias Carrier.Credentials
-
-  @table :carrier_creds
 
   def start_link() do
     GenServer.start_link(__MODULE__, [], name: __MODULE__)
   end
 
   def get() do
-    get(:system)
+    get(:system, by: :tag)
   end
 
-  def get(:system) do
-    [{_, id}] = :ets.lookup(@table, :system)
-    get(id)
-  end
-  def get(id) do
-    case :ets.lookup(@table, id) do
-      [{_, creds}] ->
-        creds
-      _ ->
-        nil
-    end
+  def get(value, opts) when opts == [by: :id] or opts == [by: :tag] do
+    GenServer.call(__MODULE__, {:get, value, opts}, :infinity)
   end
 
-  def store!(%Credentials{}=creds, is_bot \\ false) do
-    case GenServer.call(__MODULE__, {:store, creds, is_bot}) do
-      :ok ->
-        credentials_path = Application.get_env(:carrier, :credentials_dir)
-        Credentials.write_public_credentials!(credentials_path, creds)
-      error ->
-        error
-    end
+  def store(%Credentials{}=creds) do
+    GenServer.call(__MODULE__, {:store, creds}, :infinity)
   end
 
   def init(_) do
-    try do
-      credentials = Credentials.validate_files!
-      init_credential_store(credentials)
-      load_all_credentials()
-      ready({:ok, nil})
-    rescue
-      e in [Carrier.SecurityError] ->
-        Logger.error("#{e.message}")
+    case Application.get_env(:carrier, :credentials_dir) do
+      nil ->
+        Logger.error("Configuration entry :carrier -> :credentials_dir is empty. Aborting startup.")
         :init.stop()
+      root ->
+        try do
+          store_path = CredentialStore.validate!(root)
+          {:ok, db} = CredentialStore.open(store_path)
+          ready({:ok, %__MODULE__{store: db}})
+        rescue
+          e in [Carrier.SecurityError, Carrier.FileError] ->
+            Logger.error("#{e.message}")
+            :init.stop()
+        end
     end
   end
 
-  def handle_call({:store, creds, true}, _from, state) do
-    case :ets.lookup(@table, :bot_id) do
-      [] ->
-        :ets.insert(@table, {:bot_id, creds.id})
-        :ets.insert(@table, {creds.id, creds})
-        {:reply, :ok, state}
-      _ ->
-        {:reply, {:error, :bot_key_exists}, state}
-    end
+  def handle_call({:get, value, opts}, _from, %__MODULE__{store: db}=state) do
+    {:reply, CredentialStore.lookup(db, value, opts), state}
   end
-  def handle_call({:store, creds, false}, _from, state) do
-    true = :ets.insert(@table, {creds.id, creds})
-    {:reply, :ok, state}
+  def handle_call({:store, creds}, _from, %__MODULE__{store: db}) do
+    {:reply, CredentialStore.store(db, creds)}
   end
-  def handle_call(_message, _from, state) do
+  def handle_call(_ignored, _from, state) do
     {:reply, :ignored, state}
-  end
-
-  defp init_credential_store(creds) do
-    :ets.new(@table, [:set, :protected, :named_table, {:read_concurrency, true}])
-    :ets.insert_new(@table, {:system, creds.id})
-    :ets.insert_new(@table, {creds.id, creds})
-  end
-
-  defp load_all_credentials() do
-    credentials_path = Application.get_env(:carrier, :credentials_dir)
-    for {name, credential} <- Credentials.read_all_credentials!(credentials_path) do
-      if name != "carrier" do
-        :ets.insert_new(@table, {name, credential})
-        Logger.info("Loaded credentials for #{name}")
-      end
-    end
   end
 
 end

@@ -20,22 +20,22 @@ defmodule Carrier.SignatureTest do
 
   test "signing maps (JSON objects)", context do
     obj = %{first_name: "Bob", last_name: "Bobbington"}
-    signed = Signature.sign(obj, context.creds)
+    signed = Signature.sign(context.creds, obj)
     verify_signature_envelope(signed, obj, context.creds)
   end
 
   test "verifying signed JSON objects", context do
     obj = %{first_name: "Bob", last_name: "Bobbington"}
-    signed = Signature.sign(obj, context.creds)
+    signed = Signature.sign(context.creds, obj)
     verify_signature_envelope(signed, obj, context.creds)
-    assert Signature.verify(signed, context.creds.public)
+    assert Signature.verify(context.creds, signed)
   end
 
   test "fail verifying signed JSON object with wrong key", context do
     obj = %{first_name: "Bob", last_name: "Bobbington"}
-    signed = Signature.sign(obj, context.creds)
+    signed = Signature.sign(context.creds, obj)
     verify_signature_envelope(signed, obj, context.creds)
-    refute Signature.verify(signed, context.other_creds.public)
+    refute Signature.verify(context.other_creds, signed)
   end
 
 end

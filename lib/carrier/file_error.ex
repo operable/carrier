@@ -10,4 +10,8 @@ defmodule Carrier.FileError do
     %__MODULE__{message: message}
   end
 
+  def not_a_file(path) do
+    %__MODULE__{message: "#{path} is not a file"}
+  end
+
 end
