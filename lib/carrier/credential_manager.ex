@@ -30,6 +30,8 @@ defmodule Carrier.CredentialManager do
     Signature.sign(creds, message)
   end
 
+  def verify_signed_message(message) when is_binary(message),
+    do: verify_signed_message(Poison.decode!(message))
   def verify_signed_message(%{"id" => id, "data" => obj}=message) do
     case get(id, by: :id) do
       {:ok, nil} ->
