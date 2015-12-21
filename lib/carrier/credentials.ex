@@ -1,6 +1,4 @@
 defmodule Carrier.Credentials do
-  alias Carrier.CredentialStore
-  alias Carrier.Util
 
   defstruct [:id, :private, :public, :tag]
 
