@@ -1,6 +1,6 @@
 defmodule Carrier.Messaging.Connection do
 
-  alias Carrier.Signature
+  alias Carrier.CredentialManager
 
   @moduledoc """
   Interface for the message bus on which commands communicate.
@@ -68,7 +68,7 @@ defmodule Carrier.Messaging.Connection do
   # protocol; for now, though, we'll accept binaries (which are
   # assumed to be JSON strings) and maps
   def publish(conn, message, kw_args) when is_binary(message) do
-    signed = Signature.sign(message)
+    signed = CredentialManager.sign_message(message)
     topic = Keyword.fetch!(kw_args, :routed_by)
     :emqttc.publish(conn, topic, Poison.encode!(signed))
   end
