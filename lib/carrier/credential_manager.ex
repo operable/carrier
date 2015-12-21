@@ -7,6 +7,7 @@ defmodule Carrier.CredentialManager do
 
   alias Carrier.Signature
   alias Carrier.Credentials
+  alias Carrier.CredentialStore
 
   def start_link() do
     GenServer.start_link(__MODULE__, [], name: __MODULE__)
