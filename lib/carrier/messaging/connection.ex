@@ -64,16 +64,11 @@ defmodule Carrier.Messaging.Connection do
     * `:routed_by` - the topic on which to publish `message`. Required.
 
   """
-  # TODO: Eventually we'll come back and tighten up our messaging
-  # protocol; for now, though, we'll accept binaries (which are
-  # assumed to be JSON strings) and maps
-  def publish(conn, message, kw_args) when is_binary(message) do
+  def publish(conn, message, kw_args) when is_map(message) do
     signed = CredentialManager.sign_message(message)
     topic = Keyword.fetch!(kw_args, :routed_by)
     :emqttc.publish(conn, topic, Poison.encode!(signed))
   end
-  def publish(conn, message, kw_args) when is_map(message),
-    do: publish(conn, Poison.encode!(message), kw_args)
 
   defp add_system_config(opts) do
     opts
