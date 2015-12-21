@@ -25,6 +25,11 @@ defmodule Carrier.CredentialManager do
     GenServer.call(__MODULE__, {:store, creds}, :infinity)
   end
 
+  def sign_message(message) when is_map(message) do
+    {:ok, creds} = get()
+    Signature.sign(creds, message)
+  end
+
   def verify_signed_message(%{"id" => id, "data" => obj}=message) do
     case get(id, by: :id) do
       {:ok, nil} ->
