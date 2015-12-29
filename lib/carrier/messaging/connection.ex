@@ -1,11 +1,14 @@
 defmodule Carrier.Messaging.Connection do
 
+  use Adz
+
   alias Carrier.CredentialManager
 
   @moduledoc """
   Interface for the message bus on which commands communicate.
   """
 
+  @connection_timeout 5000 # 5 seconds
   @default_log_level :error
 
   # Note: This type is what we get from emqttc; if we change
@@ -35,7 +38,27 @@ defmodule Carrier.Messaging.Connection do
   @spec connect(Keyword.t()) :: {:ok, connection()} | :ignore | {:error, term()}
   def connect(opts) do
     opts = add_system_config(opts)
-    :emqttc.start_link(opts)
+    {:ok, conn} = :emqttc.start_link(opts)
+
+    # `emqttc:start_link/1` returns a message bus client process, but it
+    # hasn't yet established a network connection to the message bus. By
+    # ensuring that we only return after the process is actually connected,
+    # we can simplify startup of processes that require a message bus
+    # connection.
+    #
+    # It also means that those clients don't have to know details about
+    # emqttc (like the structure of the "connected" message), so fewer
+    # implementation details about our choice of message bus don't leak out.
+    #
+    # If we don't connect after a specified timeout, we just fail.
+    receive do
+      {:mqttc, ^conn, :connected} ->
+        Logger.info("Connection #{inspect conn} connected to message bus")
+        {:ok, conn}
+    after @connection_timeout ->
+        Logger.info("Connection not established")
+        {:error, :econnrefused}
+    end
   end
 
   def subscribe(conn, topic) do
