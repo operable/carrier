@@ -8,7 +8,7 @@ defmodule Carrier.Messaging.Connection do
   Interface for the message bus on which commands communicate.
   """
 
-  @connection_timeout 5000 # 5 seconds
+  @default_connect_timeout 5000 # 5 seconds
   @default_log_level :error
 
   # Note: This type is what we get from emqttc; if we change
@@ -33,10 +33,16 @@ defmodule Carrier.Messaging.Connection do
   specified in application configuration under `:carrier` -> `__MODULE__` -> `:log_level`.
   If that is not set, it defaults to the value specified in the attribute `@default_log_level`.
 
+  By default, waits #{@default_connect_timeout} milliseconds to
+  connect to the message bus. This can be overridden by passing a
+  `:connect_timeout` option in `opts`.
+
   """
   # Again, this spec is what comes from emqttc
   @spec connect(Keyword.t()) :: {:ok, connection()} | :ignore | {:error, term()}
   def connect(opts) do
+    connect_timeout = Keyword.get(opts, :connect_timeout, @default_connect_timeout)
+
     opts = add_system_config(opts)
     {:ok, conn} = :emqttc.start_link(opts)
 
@@ -55,7 +61,7 @@ defmodule Carrier.Messaging.Connection do
       {:mqttc, ^conn, :connected} ->
         Logger.info("Connection #{inspect conn} connected to message bus")
         {:ok, conn}
-    after @connection_timeout ->
+    after connect_timeout ->
         Logger.info("Connection not established")
         {:error, :econnrefused}
     end
