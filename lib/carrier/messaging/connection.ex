@@ -115,8 +115,7 @@ defmodule Carrier.Messaging.Connection do
     host = case is_binary(host) do
              true ->
                {:ok, hostent} = :inet.gethostbyname(String.to_char_list(host))
-               [addr|_] = hostent(hostent, :h_addr_list)
-               addr
+               List.first(hostent(hostent, :h_addr_list))
              false ->
                host
            end
