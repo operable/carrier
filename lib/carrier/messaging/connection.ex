@@ -2,6 +2,9 @@ defmodule Carrier.Messaging.Connection do
 
   use Adz
 
+  require Record
+  Record.defrecord :hostent, Record.extract(:hostent, from_lib: "kernel/include/inet.hrl")
+
   alias Carrier.CredentialManager
 
   @moduledoc """
@@ -111,8 +114,8 @@ defmodule Carrier.Messaging.Connection do
     log_level = Keyword.get(connect_opts, :log_level, @default_log_level)
     host = case is_binary(host) do
              true ->
-               {:ok, addr} = :inet.parse_address(:erlang.binary_to_list(host))
-               addr
+               {:ok, hostent} = :inet.gethostbyname(String.to_char_list(host))
+               List.first(hostent(hostent, :h_addr_list))
              false ->
                host
            end
