@@ -30,6 +30,14 @@ defmodule Carrier.Messaging.Connection do
   end
 
   @doc """
+  Closes a message bus client connection
+  """
+  @spec close(connection()) :: :ok
+  def close(conn) do
+    :emqttc.disconnect(conn)
+  end
+
+  @doc """
   Starts up a message bus client process.
 
   Additionally, logging on this connection will be done at the level
