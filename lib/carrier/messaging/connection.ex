@@ -80,7 +80,7 @@ defmodule Carrier.Messaging.Connection do
     # See
     # http://docs.oasis-open.org/mqtt/mqtt/v3.1.1/os/mqtt-v3.1.1-os.html#_Toc398718101
     # for more.
-    :emqttc.subscribe(conn, topic, :qos1)
+    :emqttc.sync_subscribe(conn, topic, :qos1)
   end
 
   def unsubscribe(conn, topic) do
