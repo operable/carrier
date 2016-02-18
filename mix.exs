@@ -20,9 +20,9 @@ defmodule Carrier.Mixfile do
   defp deps do
     [{:enacl, github: "jlouis/enacl", tag: "0.15.0"},
      {:emqttc, github: "emqtt/emqttc", branch: "master"},
-     {:adz, git: "git@github.com:operable/adz", tag: "0.1-rc1"},
-     {:uuid, "~> 1.0.1"},
-     {:poison, "~> 1.5.0"}]
+     {:adz, git: "git@github.com:operable/adz", ref: "140db3cc4dbecee1a2b68e8d0b18d7c64f27996a"},
+     {:uuid, "~> 1.1.3"},
+     {:poison, "~> 1.5.2"}]
   end
 
   defp elixirc_paths(:test), do: ["lib", "test/support"]
