@@ -3,8 +3,8 @@ defmodule Carrier.Mixfile do
 
   def project do
     [app: :carrier,
-     version: "0.0.1",
-     elixir: "~> 1.1",
+     version: "0.2",
+     elixir: "~> 1.2",
      elixirc_paths: elixirc_paths(Mix.env),
      elixirc_options: [warnings_as_errors: System.get_env("ALLOW_WARNINGS") == nil],
      build_embedded: Mix.env == :prod,
@@ -20,7 +20,7 @@ defmodule Carrier.Mixfile do
   defp deps do
     [{:enacl, github: "jlouis/enacl", tag: "0.15.0"},
      {:emqttc, github: "operable/emqttc", ref: "dc36f593822f8e01771a7edc780441fdfb2f7b15"},
-     {:adz, git: "git@github.com:operable/adz", ref: "5296c12eb66ace84235f479fc65eabf2ee7bfc38"},
+     {:adz, git: "git@github.com:operable/adz", ref: "5a6431ec19349dd11b1b667616a64dec652e75b7"},
      {:uuid, "~> 1.1.3"},
      {:poison, "~> 1.5.2"}]
   end
