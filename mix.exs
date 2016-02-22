@@ -20,7 +20,7 @@ defmodule Carrier.Mixfile do
   defp deps do
     [{:enacl, github: "jlouis/enacl", tag: "0.15.0"},
      {:emqttc, github: "operable/emqttc", ref: "dc36f593822f8e01771a7edc780441fdfb2f7b15"},
-     {:adz, git: "git@github.com:operable/adz", ref: "140db3cc4dbecee1a2b68e8d0b18d7c64f27996a"},
+     {:adz, git: "git@github.com:operable/adz", ref: "5296c12eb66ace84235f479fc65eabf2ee7bfc38"},
      {:uuid, "~> 1.1.3"},
      {:poison, "~> 1.5.2"}]
   end
