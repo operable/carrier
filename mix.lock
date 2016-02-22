@@ -1,4 +1,4 @@
-%{"adz": {:git, "git@github.com:operable/adz", "140db3cc4dbecee1a2b68e8d0b18d7c64f27996a", [ref: "140db3cc4dbecee1a2b68e8d0b18d7c64f27996a"]},
+%{"adz": {:git, "git@github.com:operable/adz", "5296c12eb66ace84235f479fc65eabf2ee7bfc38", [ref: "5296c12eb66ace84235f479fc65eabf2ee7bfc38"]},
   "emqttc": {:git, "https://github.com/operable/emqttc.git", "dc36f593822f8e01771a7edc780441fdfb2f7b15", [ref: "dc36f593822f8e01771a7edc780441fdfb2f7b15"]},
   "enacl": {:git, "https://github.com/jlouis/enacl.git", "03f93c4f7d0cb56b5a86b445cb004a3a8de2278b", [tag: "0.15.0"]},
   "gen_logger": {:git, "git://github.com/emqtt/gen_logger.git", "eced518f1dea167bebd576bb8b1cccb764a45739", [branch: "master"]},
