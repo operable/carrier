@@ -119,7 +119,24 @@ defmodule Carrier.Messaging.Connection do
              false ->
                host
            end
-    [{:host, host}, {:port, port}, {:logger, {:lager, log_level}} | opts]
+    updated = [{:host, host}, {:port, port}, {:logger, {:lager, log_level}} | opts]
+    configure_ssl(updated, connect_opts)
+  end
+
+  # Enable SSL connections when SSL config is provided
+  defp configure_ssl(opts, connect_opts) do
+    if Keyword.get(connect_opts, :ssl, false) do
+      cacertfile = Keyword.get(connect_opts, :cacerts, nil)
+      if is_binary(cacertfile) do
+        # Convert to char list since emqttc is expecting Erlang strings
+        cacertfile = String.to_char_list(cacertfile)
+        [ssl: [verify: :verify_peer, crl_check: true, cacertfile: cacertfile]] ++ opts
+      else
+        [:ssl | opts]
+      end
+    else
+      opts
+    end
   end
 
 end
