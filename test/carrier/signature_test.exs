@@ -31,11 +31,4 @@ defmodule Carrier.SignatureTest do
     assert Signature.verify(context.creds, signed)
   end
 
-  test "fail verifying signed JSON object with wrong key", context do
-    obj = %{first_name: "Bob", last_name: "Bobbington"}
-    signed = Signature.sign(context.creds, obj)
-    verify_signature_envelope(signed, obj, context.creds)
-    refute Signature.verify(context.other_creds, signed)
-  end
-
 end
