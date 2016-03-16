@@ -13,8 +13,7 @@ defmodule Carrier.Credentials do
   @doc "Generates a new private/public keypair"
   @spec generate() :: %__MODULE__{}
   def generate() do
-    keys = :enacl.sign_keypair()
-    %__MODULE__{id: UUID.uuid4(), private: keys.secret, public: keys.public}
+    %__MODULE__{id: UUID.uuid4(), private: "deprecated", public: "deprecated"}
   end
 
   @doc "Adds a tag to credentials"
