@@ -3,7 +3,7 @@ defmodule Carrier.Mixfile do
 
   def project do
     [app: :carrier,
-     version: "0.2.0",
+     version: "0.3.0",
      elixir: "~> 1.2",
      elixirc_paths: elixirc_paths(Mix.env),
      elixirc_options: [warnings_as_errors: System.get_env("ALLOW_WARNINGS") == nil],
