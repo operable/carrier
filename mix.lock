@@ -1,6 +1,5 @@
-%{"adz": {:git, "https://github.com/operable/adz.git", "601ceb3a19716ea635a7cd83c05f5593f5cf6c40", [branch: "v0.3.0"]},
-  "emqttc": {:git, "https://github.com/operable/emqttc.git", "dc36f593822f8e01771a7edc780441fdfb2f7b15", [branch: "v0.3.0"]},
-  "enacl": {:git, "https://github.com/jlouis/enacl.git", "03f93c4f7d0cb56b5a86b445cb004a3a8de2278b", [tag: "0.15.0"]},
+%{"adz": {:git, "https://github.com/operable/adz.git", "601ceb3a19716ea635a7cd83c05f5593f5cf6c40", [tag: "0.3.0"]},
+  "emqttc": {:git, "https://github.com/operable/emqttc.git", "dc36f593822f8e01771a7edc780441fdfb2f7b15", [tag: "0.3.0"]},
   "gen_logger": {:git, "git://github.com/emqtt/gen_logger.git", "eced518f1dea167bebd576bb8b1cccb764a45739", [branch: "master"]},
   "getopt": {:git, "https://github.com/jcomellas/getopt.git", "626698975e63866156159661d100785d65eab6f9", [branch: "master"]},
   "goldrush": {:git, "git://github.com/DeadZen/goldrush.git", "64864ba7fcf40988361340e48680b49a2c2938cf", [tag: "0.1.7"]},
