@@ -5,8 +5,6 @@ defmodule Carrier.Messaging.Connection do
   require Record
   Record.defrecord :hostent, Record.extract(:hostent, from_lib: "kernel/include/inet.hrl")
 
-  alias Carrier.CredentialManager
-
   @moduledoc """
   Interface for the message bus on which commands communicate.
   """
@@ -97,9 +95,8 @@ defmodule Carrier.Messaging.Connection do
 
   """
   def publish(conn, message, kw_args) when is_map(message) do
-    signed = CredentialManager.sign_message(message)
     topic = Keyword.fetch!(kw_args, :routed_by)
-    :emqttc.publish(conn, topic, Poison.encode!(signed))
+    :emqttc.publish(conn, topic, Poison.encode!(message))
   end
 
   defp add_system_config(opts) do

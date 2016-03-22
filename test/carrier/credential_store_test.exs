@@ -25,8 +25,6 @@ defmodule Carrier.CredentialStoreTest do
     {:ok, db} = CredentialStore.open(db_path)
     {:ok, creds} = CredentialStore.lookup(db, :system, by: :tag)
     assert creds.id != nil
-    assert creds.public != nil
-    assert creds.private != nil
     {:ok, _} = CredentialStore.close(db)
     assert CredentialStore.validate!(credentials_root) == db_path
   end

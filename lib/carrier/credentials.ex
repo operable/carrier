@@ -1,19 +1,14 @@
 defmodule Carrier.Credentials do
 
-  defstruct [:id, :private, :public, :tag]
+  defstruct [:id, :tag]
 
   @cred_db "carrier_credentials.db"
-  @private_key "carrier_priv.key"
-  @public_key "carrier_pub.key"
   @carrier_id "carrier.id"
-
-  # 32 byte key w/64 byte checksum
-  @key_hash_size 64
 
   @doc "Generates a new private/public keypair"
   @spec generate() :: %__MODULE__{}
   def generate() do
-    %__MODULE__{id: UUID.uuid4(), private: "deprecated", public: "deprecated"}
+    %__MODULE__{id: UUID.uuid4()}
   end
 
   @doc "Adds a tag to credentials"

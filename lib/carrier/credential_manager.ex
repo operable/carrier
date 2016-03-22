@@ -5,7 +5,6 @@ defmodule Carrier.CredentialManager do
   use GenServer
   use Adz
 
-  alias Carrier.Signature
   alias Carrier.Credentials
   alias Carrier.CredentialStore
 
@@ -23,26 +22,6 @@ defmodule Carrier.CredentialManager do
 
   def store(%Credentials{}=creds) do
     GenServer.call(__MODULE__, {:store, creds}, :infinity)
-  end
-
-  def sign_message(message) when is_map(message) do
-    {:ok, creds} = get()
-    Signature.sign(creds, message)
-  end
-
-  def verify_signed_message(message) when is_binary(message),
-    do: verify_signed_message(Poison.decode!(message))
-  def verify_signed_message(%{"id" => id, "data" => obj}=message) do
-    case get(id, by: :id) do
-      {:ok, nil} ->
-        false
-      {:ok, creds} ->
-        if Signature.verify(creds, message) do
-          {true, obj}
-        else
-          false
-        end
-    end
   end
 
   def init(_) do
