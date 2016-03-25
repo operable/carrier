@@ -5,7 +5,7 @@ defmodule Carrier.Credentials do
   @cred_db "carrier_credentials.db"
   @carrier_id "carrier.id"
 
-  @doc "Generates a new private/public keypair"
+  @doc "Generates a uuid for a new set of credentials"
   @spec generate() :: %__MODULE__{}
   def generate() do
     %__MODULE__{id: UUID.uuid4()}
