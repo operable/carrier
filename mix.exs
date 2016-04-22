@@ -19,7 +19,7 @@ defmodule Carrier.Mixfile do
 
   defp deps do
     [{:emqttc, github: "operable/emqttc", tag: "cog-0.2"},
-     {:adz, github: "operable/adz", tag: "0.2"},
+     {:adz, github: "operable/adz", tag: "0.4.0"},
      {:uuid, "~> 1.1.3"},
      {:poison, "~> 1.5.2"}]
   end
